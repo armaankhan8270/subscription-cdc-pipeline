@@ -1,0 +1,28 @@
+# Environment variables - NEVER commit secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# SQLite database - never commit binary data
+*.db
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Pipeline outputs - generated CSVs
+pipeline/output/
+
+# dbt
+dbt_project/dbt_packages/
+dbt_project/logs/
+dbt_project/target/
