@@ -1,6 +1,9 @@
 # Environment variables - NEVER commit secrets
 .env
 
+# dbt profiles - contains credentials
+dbt_project/profiles.yml
+
 # Python
 __pycache__/
 *.py[cod]
