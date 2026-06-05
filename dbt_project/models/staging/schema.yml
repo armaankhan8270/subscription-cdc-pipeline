@@ -2,12 +2,9 @@ version: 2
 
 models:
   - name: stg_customers
-    description: "Cleaned current state of customers"
     columns:
       - name: customer_id
-        tests:
-          - unique
-          - not_null
+        tests: [unique, not_null]
       - name: plan
         tests:
           - accepted_values:
@@ -15,15 +12,60 @@ models:
       - name: status
         tests:
           - accepted_values:
-              values: ['active', 'cancelled', 'paused']
+              values: ['active', 'cancelled', 'suspended']
+
+  - name: stg_subscriptions
+    columns:
+      - name: subscription_id
+        tests: [unique, not_null]
+      - name: plan_type
+        tests:
+          - accepted_values:
+              values: ['free', 'basic', 'premium', 'enterprise']
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['active', 'cancelled', 'expired']
 
   - name: stg_purchases
-    description: "Cleaned purchase records"
     columns:
       - name: purchase_id
+        tests: [unique, not_null]
+      - name: amount
+        tests: [not_null]
+
+  - name: stg_billing_invoices
+    columns:
+      - name: invoice_id
+        tests: [unique, not_null]
+      - name: status
         tests:
-          - unique
-          - not_null
-      - name: customer_id
+          - accepted_values:
+              values: ['pending', 'paid', 'overdue', 'refunded']
+
+  - name: stg_payment_methods
+    columns:
+      - name: payment_method_id
+        tests: [unique, not_null]
+      - name: type
         tests:
-          - not_null
+          - accepted_values:
+              values: ['credit_card', 'paypal', 'bank_transfer']
+
+  - name: stg_usage_events
+    columns:
+      - name: event_id
+        tests: [unique, not_null]
+
+  - name: stg_support_tickets
+    columns:
+      - name: ticket_id
+        tests: [unique, not_null]
+      - name: priority
+        tests:
+          - accepted_values:
+              values: ['low', 'medium', 'high', 'critical']
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['open', 'in_progress', 'resolved', 'closed']

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Billing{% endblock %}
+{% block content %}
+<h1 style="font-size: 24px; margin-bottom: 20px;">Billing & Revenue</h1>
+<div class="grid-2">
+    <div class="chart">{{ bar | safe }}</div>
+    <div class="chart">{{ pie | safe }}</div>
+</div>
+<table>
+    <thead><tr>
+        <th>Invoice ID</th><th>Customer</th><th>Amount</th><th>Status</th>
+        <th>Due Date</th><th>Paid At</th><th>Days to Pay</th>
+    </tr></thead>
+    <tbody>
+    {% for inv in invoices %}
+    <tr>
+        <td>{{ inv[0] }}</td>
+        <td>{{ inv[1] }}</td>
+        <td>${{ inv[2] }}</td>
+        <td><span class="badge badge-{{ 'enterprise' if inv[4] == 'paid' else 'free' if inv[4] == 'pending' else 'premium' }}">{{ inv[4] }}</span></td>
+        <td>{{ inv[5] }}</td>
+        <td>{{ inv[6] if inv[6] else '—' }}</td>
+        <td>{{ inv[8] }} days</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Usage & Support{% endblock %}
+{% block content %}
+<h1 style="font-size: 24px; margin-bottom: 20px;">Usage Analytics</h1>
+<div class="grid-2">
+    <div class="chart">{{ pie | safe }}</div>
+    <div class="chart">{{ heat | safe }}</div>
+</div>
+<table>
+    <thead><tr>
+        <th>Event Type</th><th>Category</th><th>Total Quantity</th><th>Count</th>
+    </tr></thead>
+    <tbody>
+    {% for e in events %}
+    <tr>
+        <td>{{ e[0] }}</td>
+        <td><span class="badge badge-basic">{{ e[1] }}</span></td>
+        <td>{{ e[2] }}</td>
+        <td>{{ e[3] }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

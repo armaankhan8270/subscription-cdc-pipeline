@@ -2,31 +2,73 @@ version: 2
 
 models:
   - name: dim_customer
-    description: "Customer dimension with full SCD Type 2 history"
     columns:
       - name: customer_sk
-        tests:
-          - unique
-          - not_null
-      - name: customer_id
-        tests:
-          - not_null
+        tests: [unique, not_null]
       - name: plan
         tests:
-          - not_null
           - accepted_values:
               values: ['free', 'basic', 'premium', 'enterprise']
+      - name: customer_id
+        tests: [not_null]
 
-  - name: fct_purchases
-    description: "Purchase facts with historically accurate customer context"
+  - name: dim_subscription
     columns:
-      - name: purchase_id
+      - name: subscription_sk
+        tests: [unique, not_null]
+      - name: plan_type
         tests:
-          - unique
-          - not_null
-      - name: customer_sk
+          - accepted_values:
+              values: ['free', 'basic', 'premium', 'enterprise']
+      - name: customer_id
         tests:
-          - not_null
           - relationships:
               to: ref('dim_customer')
-              field: customer_sk
+              field: customer_id
+
+  - name: dim_support_ticket
+    columns:
+      - name: ticket_sk
+        tests: [unique, not_null]
+      - name: priority
+        tests:
+          - accepted_values:
+              values: ['low', 'medium', 'high', 'critical']
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['open', 'in_progress', 'resolved', 'closed']
+      - name: customer_id
+        tests:
+          - relationships:
+              to: ref('dim_customer')
+              field: customer_id
+
+  - name: fct_purchases
+    columns:
+      - name: purchase_id
+        tests: [unique, not_null]
+      - name: customer_id
+        tests:
+          - relationships:
+              to: ref('dim_customer')
+              field: customer_id
+
+  - name: fct_billing_invoices
+    columns:
+      - name: invoice_id
+        tests: [unique, not_null]
+      - name: payment_status
+        tests:
+          - accepted_values:
+              values: ['pending', 'paid', 'overdue', 'refunded']
+      - name: customer_id
+        tests:
+          - relationships:
+              to: ref('dim_customer')
+              field: customer_id
+
+  - name: fct_usage_events
+    columns:
+      - name: event_id
+        tests: [unique, not_null]

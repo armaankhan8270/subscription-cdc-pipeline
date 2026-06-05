@@ -8,18 +8,19 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #1a1a2e; }
-        nav { background: #1a1a2e; padding: 16px 32px; display: flex; align-items: center; gap: 32px; }
+        nav { background: #1a1a2e; padding: 16px 32px; display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
         nav h1 { color: #e94560; font-size: 20px; font-weight: 700; }
         nav a { color: #a0a0b8; text-decoration: none; font-size: 14px; padding: 6px 14px; border-radius: 6px; }
         nav a:hover, nav a.active { color: #fff; background: rgba(255,255,255,0.1); }
-        .container { max-width: 1280px; margin: 0 auto; padding: 24px; }
-        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
         .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-        .card h3 { font-size: 13px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
-        .card .value { font-size: 28px; font-weight: 700; margin-top: 6px; }
+        .card h3 { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card .value { font-size: 26px; font-weight: 700; margin-top: 4px; }
+        .card .sub { font-size: 12px; color: #9ca3af; margin-top: 2px; }
         .chart { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; }
         .chart h2 { font-size: 16px; margin-bottom: 12px; color: #374151; }
-        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; }
         th { background: #f9fafb; padding: 12px 16px; text-align: left; font-size: 12px; text-transform: uppercase; color: #6b7280; letter-spacing: 0.5px; }
         td { padding: 10px 16px; border-top: 1px solid #f3f4f6; font-size: 14px; }
         .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; }
@@ -29,6 +30,9 @@
         .badge-enterprise { background: #ede9fe; color: #7c3aed; }
         .diff { color: #e94560; font-weight: 600; }
         .same { color: #10b981; font-weight: 600; }
+        select { padding: 8px 16px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; margin-bottom: 16px; background: #fff; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -37,6 +41,9 @@
         <a href="/" class="{{ 'active' if active == 'overview' else '' }}">Overview</a>
         <a href="/customers" class="{{ 'active' if active == 'customers' else '' }}">Customers</a>
         <a href="/purchases" class="{{ 'active' if active == 'purchases' else '' }}">Purchases</a>
+        <a href="/subscriptions" class="{{ 'active' if active == 'subscriptions' else '' }}">Subscriptions</a>
+        <a href="/billing" class="{{ 'active' if active == 'billing' else '' }}">Billing</a>
+        <a href="/usage" class="{{ 'active' if active == 'usage' else '' }}">Usage</a>
         <a href="/distribution" class="{{ 'active' if active == 'distribution' else '' }}">Distribution</a>
     </nav>
     <div class="container">

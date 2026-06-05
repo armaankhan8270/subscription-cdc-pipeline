@@ -1,25 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Pipeline Overview{% endblock %}
 {% block content %}
+<h1 style="font-size: 24px; margin-bottom: 20px;">Pipeline Overview</h1>
 <div class="cards">
-    <div class="card"><h3>Raw Records</h3><div class="value">{{ counts.raw_customers }}</div></div>
-    <div class="card"><h3>Staging Customers</h3><div class="value">{{ counts.staging_customers }}</div></div>
-    <div class="card"><h3>SCD2 Versions</h3><div class="value">{{ counts.snapshot_versions }}</div></div>
-    <div class="card"><h3>Total Purchases</h3><div class="value">{{ counts.total_purchases }}</div></div>
+    <div class="card"><h3>Raw Customers</h3><div class="value">{{ counts["Raw Customers"] }}</div><div class="sub">CDC append-only log</div></div>
+    <div class="card"><h3>Staging Customers</h3><div class="value">{{ counts["Staging Customers"] }}</div><div class="sub">Current state (1 per customer)</div></div>
+    <div class="card"><h3>SCD2 Versions</h3><div class="value">{{ counts["SCD2 Versions"] }}</div><div class="sub">Historical versions preserved</div></div>
+    <div class="card"><h3>Purchases</h3><div class="value">{{ counts["Purchases"] }}</div><div class="sub">Temporal join verified</div></div>
+    <div class="card"><h3>Subscriptions</h3><div class="value">{{ counts["Subscriptions"] }}</div><div class="sub">Active + cancelled</div></div>
+    <div class="card"><h3>Invoices</h3><div class="value">{{ counts["Invoices"] }}</div><div class="sub">Billing history</div></div>
+    <div class="card"><h3>Usage Events</h3><div class="value">{{ counts["Usage Events"] }}</div><div class="sub">API calls, storage, bandwidth</div></div>
+    <div class="card"><h3>Support Tickets</h3><div class="value">{{ counts["Support Tickets"] }}</div><div class="sub">Customer support interactions</div></div>
 </div>
-
-<div class="chart">{{ chart|safe }}</div>
-
-<h2 style="margin-bottom:12px;font-size:16px;">Task History</h2>
-<table>
-    <tr><th>Task</th><th>State</th><th>Scheduled</th><th>Error</th></tr>
-    {% for t in tasks %}
-    <tr>
-        <td>{{ t[0] }}</td>
-        <td>{{ t[1] }}</td>
-        <td>{{ t[2] }}</td>
-        <td>{{ t[3] or '' }}</td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="chart"><h2>Current Plan Distribution</h2>{{ chart | safe }}</div>
 {% endblock %}

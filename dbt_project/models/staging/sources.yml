@@ -7,3 +7,8 @@ sources:
     tables:
       - name: customers
       - name: purchases
+      - name: subscriptions
+      - name: billing_invoices
+      - name: payment_methods
+      - name: usage_events
+      - name: support_tickets
