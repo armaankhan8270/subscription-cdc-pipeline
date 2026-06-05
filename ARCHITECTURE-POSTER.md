@@ -1,221 +1,142 @@
-# Architecture Poster Prompt
+# Architecture Poster Prompt (1000+ Customer Scale)
 
-Generate a clean horizontal infographic/poster (wide 16:9, 1920×1080) showing the **SubsTrack** pipeline as a step-by-step flow from left to right. Each step is a connected box with arrows. Style: dark mode, minimal, glowing connections, modern data engineering aesthetic.
+Use with Midjourney / DALL-E / Gemini / Leonardo to generate a professional enterprise-grade architecture poster.
 
 ---
 
-## The Layout — 7 Connected Boxes in Sequence
+## Short Prompt
 
 ```
-[1. SQLite] → [2. CDC Extract] → [3. Snowflake Stage] → [4. Snowpipe] → [5. Stream + Task] → [6. dbt] → [7. Dashboard]
-                                                                                                ↓
-                                                                                          SCD2 Snapshots
+Enterprise architecture diagram "SubsTrack — CDC + SCD2 SaaS Pipeline" in 4 horizontal medallion layers. Dark navy background (#0a0e27). 1000+ customer scale.
+
+LAYER 1 (blue): SOURCE & INGESTION — SQLite database with 7 tables: customers (1000 rows), purchases (2000), subscriptions (1100), billing_invoices (6000), payment_methods (1060), usage_events (4000), support_tickets (2000). CDC engine with watermark.json extracting changes into timestamped CSVs. Upload arrow labeled "PUT file://... @RAW_STAGE" into Snowflake internal stage.
+
+LAYER 2 (purple): SNOWFLAKE PROCESSING — 7 Snowpipe pipes loading CSV into RAW tables. 7 Streams (delta icons) on each RAW table. 7 Tasks (gear icons) merging data into STAGING tables. Yellow highlight: "NO SCHEDULE — EXECUTE TASK manual only". STAGING holds current state (1 row per customer, 1 per purchase, etc.).
+
+LAYER 3 (orange, AMBER GLOW focus): dbt TRANSFORMATIONS — Large dbt logo. Three sections:
+- Left: 7 staging models cleaning and enriching data
+- Center (GLOWING): 4 SCD2 snapshots — customers (2+ versions for 8%), subscriptions (plan changes tracked), payment_methods (card updates), support_tickets (status history). Show Alice example with 2 rows: Basic (2024→2026) → Premium (2026→present). dbt_scd_id, dbt_valid_from, dbt_valid_to columns highlighted.
+- Right: Mart models — dim_customer, dim_subscription, fct_purchases with temporal join "purchase_date BETWEEN valid_from AND valid_to". DIFFERENT/SAME badges proving historical accuracy.
+
+LAYER 4 (green): DASHBOARD — FastAPI with 6 pages:
+- Overview (8 metric cards + plan bar chart)
+- Customers (dropdown + SCD2 timeline)
+- Purchases (DIFFERENT red / SAME green badges)
+- Subscriptions (active vs cancelled, plan breakdown)
+- Billing (monthly revenue chart, invoice status)
+- Usage (usage category pie, per-customer grouped bars)
+
+Left sidebar: Pipeline health (Data Freshness, Total Records: 16000+, Tests: 25+ passing). Right sidebar: Tech stack badges (Python, SQLite, Snowflake, dbt 1.8.5, FastAPI, Plotly). Bottom strip: Git commit history with 8 nodes. 4K, 16:9, professional keynote quality. Glowing cyan arrows connecting layers.
 ```
 
-Each box should show what happens INSIDE it. Below is the detail for each.
+---
+
+## Detailed Prompt
+
+```
+Create a 4K (3840×2160) enterprise architecture poster titled "SubsTrack — CDC + SCD2 SaaS Pipeline" in 4 horizontal medallion layers. Dark navy background (#0a0e27) with subtle grid. Each layer is a large card with semi-transparent background and colored border.
+
+=== LAYER 1 — SOURCE & INGESTION (Blue #1565c0) ===
+
+SECTION: SQLite Source (left)
+- Large database cylinder icon
+- 7 table icons inside, each with row count:
+  - customers: 1,000 rows
+  - purchases: ~2,000 rows
+  - subscriptions: ~1,100 rows
+  - billing_invoices: ~6,000 rows
+  - payment_methods: ~1,060 rows
+  - usage_events: ~4,000 rows
+  - support_tickets: ~2,000 rows
+- "updated_at" column highlighted yellow on customers table (CDC cursor)
+
+SECTION: CDC Engine (center)
+- Python icon + watermark.json file
+- Flow: watermark → SQL query → CSV output
+- Multiple timestamped CSV files coming out
+- Note: "At-least-once semantics"
+
+SECTION: Snowflake Stage (right)
+- Cloud folder icon @RAW_STAGE
+- 7 folder paths: /customers/, /purchases/, /subscriptions/, etc.
+- Arrow to Layer 2: "ALTER PIPE REFRESH (manual trigger)"
+
+=== LAYER 2 — SNOWFLAKE PROCESSING (Purple #6a1b9a) ===
+
+SECTION: Snowpipes (left)
+- 7 pipe icons stacked, each with table name
+- Arrow: CSV → RAW table (append-only)
+
+SECTION: Streams (center)
+- 7 delta icons (Δ)
+- Each on a RAW table: APPEND_ONLY = TRUE
+- Arrow: "Stream has data →"
+
+SECTION: Tasks (right)
+- 7 gear icons
+- SQL: "MERGE INTO STAGING.xxx USING STREAM"
+- YELLOW BOX: "NO SCHEDULE — manual EXECUTE TASK"
+- Result: STAGING tables with current state
+
+=== LAYER 3 — dbt TRANSFORMATIONS (Orange #ef6c00, LARGEST) ===
+This layer is 1.5x the height of others. AMBER GLOW (#ffb300) on center section.
+
+HEADER: dbt logo + "16 staging models + 4 SCD2 snapshots + 6 mart models • 25+ tests passing"
+
+LEFT — Staging Models (7 files):
+- stg_customers.sql: plan_rank, days_since_signup
+- stg_purchases.sql: purchase_month, purchase_year
+- stg_subscriptions.sql: plan_rank, is_active
+- stg_billing_invoices.sql: is_paid, days_to_pay
+- stg_payment_methods.sql: is_valid, expiration_date
+- stg_usage_events.sql: event_category, event_date
+- stg_support_tickets.sql: priority_rank, ticket_age_days
+
+CENTER — SCD2 Snapshots (AMBER GLOW, visual focus):
+- 4 snapshot configs: customers, subscriptions, payment_methods, support_tickets
+- Strategy: timestamp on updated_at
+- CENTERPIECE: Alice's customer data as 2 rows:
+  Row 1: Basic | dbt_valid_from: 2024-01-01 | dbt_valid_to: 2026-06-05
+  Row 2: Premium | dbt_valid_from: 2026-06-05 | dbt_valid_to: NULL (CURRENT)
+- Highlighted columns: dbt_scd_id (surrogate key), dbt_valid_from, dbt_valid_to
+- Note: "SCD2 preserves every version — 8% of customers have plan changes"
+
+RIGHT — Mart Models:
+- dim_customer: plan_tier, is_current, days_on_plan, estimated_revenue
+- dim_subscription: plan_tier, total_subscription_days
+- fct_purchases (HIGHLIGHTED): temporal join — "purchase_date BETWEEN valid_from AND valid_to"
+- Example result: Alice Feb purchase → Basic (NOT Premium!) — DIFFERENT badge
+- fct_billing_invoices: collected_revenue, outstanding_revenue
+- fct_usage_events: joined with customer dimension
+- dim_support_ticket: SCD2 tracked status changes
+
+=== LAYER 4 — DASHBOARD (Green #2e7d32) ===
+
+FastAPI logo + "6 Pages • Live Snowflake Queries"
+
+6 panels in a 3x2 grid:
+1. Overview: 8 metric cards (all 7 tables + SCD2 versions) + plan bar chart
+2. Customers: dropdown selector + SCD2 timeline chart per customer
+3. Purchases: Table with 🔴 DIFFERENT / 🟢 SAME badges + revenue charts
+4. Subscriptions: Active vs cancelled pie chart + plan breakdown bar chart
+5. Billing: Monthly revenue bar chart + invoice status pie chart
+6. Usage: Usage category pie + per-customer grouped bar chart
+
+SIDEBARS:
+Left: Pipeline health — "Total Records: ~16,000+ • Tests: 25+ Passing • Freshness: Live"
+Right: Tech badges — Python 3.12, SQLite, Snowflake, dbt 1.8.5, FastAPI, Plotly, Jinja2, Git
+
+BOTTOM: Git history — 8 commit nodes connected by line
+"scaffold → source → cdc → snowflake → dbt → dashboard → scale → docs"
+GitHub URL: github.com/armaankhan8270/subscription-cdc-pipeline
+
+STYLE: Professional keynote/enterprise presentation. Inter font. Smooth cyan bezier arrows. Geometric outlined icons. Generous whitespace. 4K, 16:9, 300 DPI. No watermarks.
+```
 
 ---
 
-## Box 1 — SQLite (Source Database)
-- **Position**: Far left
-- **Label**: "SQLite — Source Database"
-- **Color**: Blue (#1565c0)
-- **Inside the box show two tables**:
-  - `customers` table icon with 3 highlighted rows:
-    - Alice | premium | updated_at: 2026-06-05  (highlight this column in yellow — this is the CDC cursor)
-    - Bob | basic | updated_at: 2026-06-05
-    - Carol | cancelled | updated_at: 2026-06-01
-  - `purchases` table icon with 3 rows:
-    - PUR_001 | Alice | Feb | $29
-    - PUR_002 | Bob | Feb | $79
-    - PUR_003 | Alice | May | $29
-- **At bottom of box**: small "python seed_data.py + simulate_changes.py" text
-- **Right side arrow**: labeled "CDC Extraction (watermark)"
+## Midjourney Version
 
----
-
-## Box 2 — CDC Extract (Python Script)
-- **Position**: Second from left, connected by arrow from Box 1
-- **Label**: "CDC Extraction — watermark.json"
-- **Color**: Teal (#00897b)
-- **Inside show**:
-  - A file icon "watermark.json" with content: `{ "customers": "2026-06-05 14:00:00" }`
-  - Arrow from watermark → SQL table: "SELECT * WHERE updated_at > watermark"
-  - Result: CSV files "customers_20260605_140000.csv", "purchases_20260605_140000.csv"
-  - Small checkmark: "at-least-once semantics"
-- **Right side arrow**: labeled "Upload to Snowflake Stage"
-
----
-
-## Box 3 — Snowflake Internal Stage
-- **Position**: Middle, connected by arrow from Box 2
-- **Label**: "@RAW_STAGE — Landing Zone"
-- **Color**: Snowflake blue (#00aae1)
-- **Inside show**:
-  - A cloud folder icon
-  - Two file paths: `@RAW_STAGE/customers/customers_20260605.csv`
-  - Small note: "Staging area — files not yet loaded"
-- **Right side arrow**: labeled "ALTER PIPE REFRESH (manual trigger)"
-
----
-
-## Box 4 — Snowpipe (Serverless Load)
-- **Position**: Middle-right, connected by arrow from Box 3
-- **Label**: "Snowpipe — COPY INTO RAW"
-- **Color**: Snowflake blue (#00aae1)
-- **Inside show**:
-  - A pipe icon with gear symbol
-  - Arrow showing: CSV on stage → RAW.CUSTOMERS table (append-only)
-  - Table icon "RAW.CUSTOMERS" showing 6 rows stacked (all historical records)
-  - Note: "AUTO_INGEST = FALSE (manual trigger)"
-- **Right side arrow**: labeled "Stream captures changes"
-
----
-
-## Box 5 — Stream + Task (Processing)
-- **Position**: Center-right, connected by arrow from Box 4
-- **Label**: "Stream + Task — MERGE to Staging"
-- **Color**: Purple (#6a1b9a)
-- **Inside show TWO sub-boxes**:
-
-  **Sub-box A — Stream**:
-  - Icon: delta symbol (Δ)
-  - Name: "CUSTOMERS_STREAM"
-  - Shows 3 change rows: CUST_001 (UPSERT), CUST_002 (UPSERT), CUST_003 (UPSERT)
-  
-  **Sub-box B — Task**:
-  - Icon: clock/schedule gear
-  - Name: "PROCESS_CUSTOMERS_TASK"
-  - SQL inside: `MERGE INTO STAGING.CUSTOMERS USING STREAM`
-  - Highlight: **"NO SCHEDULE — run via EXECUTE TASK"** in yellow
-  - Result table: "STAGING.CUSTOMERS" with current state (6 rows, each customer only once)
-  
-  Arrow connecting: Stream → Task → Staging table
-- **Right side arrow**: labeled "dbt reads from Staging"
-
----
-
-## Box 6 — dbt (Transformation)
-- **Position**: Second from right, connected by arrow from Box 5
-- **Label**: "dbt — Clean → Snapshot → Mart"
-- **Color**: Orange (#ef6c00)
-- **Inside show THREE sub-boxes stacked vertically**:
-
-  **Sub-box A — Staging Models** (top):
-  - stg_customers.sql: adds plan_rank, days_since_signup
-  - stg_purchases.sql: adds purchase_month/year
-  - Checkmark: "16 data tests passing"
-
-  **Sub-box B — SCD2 Snapshot** (middle, highlighted with glow):
-  - dim_customer_snapshot.sql
-  - Strategy: timestamp on updated_at
-  - Show Alice's data as two version rows:
-    - Version 1: Basic | 2024-01-01 → 2026-06-05
-    - Version 2: Premium | 2026-06-05 → NULL (current)
-  - Note: "dbt adds: dbt_scd_id, dbt_valid_from, dbt_valid_to"
-
-  **Sub-box C — Mart Models** (bottom):
-  - dim_customer.sql: plan_tier, is_current, days_on_plan, estimated_revenue
-  - fct_purchases.sql: **THE KEY LINE** — "purchase_date BETWEEN valid_from AND valid_to"
-  - Show the temporal join result for Alice:
-    - Feb purchase → plan_at_purchase = Basic (NOT Premium!)
-    - Highlight: "DIFFERENT — Historical truth vs current state"
-
-- **Right side arrow**: labeled "Snowflake queries"
-
----
-
-## Box 7 — FastAPI Dashboard
-- **Position**: Far right, connected by arrow from Box 6
-- **Label**: "FastAPI Dashboard — 4 Pages"
-- **Color**: Green (#2e7d32)
-- **Inside show 4 small rectangles in a 2×2 grid**:
-
-  **Overview**:
-  - 4 count boxes: RAW=8, STAGING=6, SCD2=10, PURCHASES=5
-  - Small bar chart: plan distribution
-
-  **Customers**:
-  - Dropdown showing "Alice"
-  - Timeline bar: Basic (blue bar) → Premium (green bar)
-  - Label: "2 versions"
-
-  **Purchases** (highlight with glow):
-  - Table with rows showing DIFFERENT/SAME badges
-  - Alice: Feb $29 → Basic (DIFFERENT) in red
-  - Alice: May $29 → Basic (DIFFERENT) in red
-  - Carol: Mar $79 → Enterprise (SAME) in green
-  - Small chart: revenue by plan
-
-  **Distribution**:
-  - Pie chart: plan % breakdown
-  - Small table: versions per customer
-
-- **Right edge**: URL "http://127.0.0.1:8000" with "Live Snowflake queries"
-
----
-
-## Bottom Strip — Git & Deployment
-- Full width strip below the 7 boxes
-- Shows the 6 git commits as small nodes connected by a line:
-  `feat: scaffold → feat: source → feat: cdc → feat: snowflake → feat: dbt → feat: dashboard → docs: readme`
-- Small badge: "Conventional Commits"
-- GitHub URL: "github.com/armaankhan8270/subscription-cdc-pipeline"
-
----
-
-## Connection Arrows Between Boxes
-
-Each arrow should have:
-1. The arrow line (glowing cyan, #00d4ff, with slight glow effect)
-2. A small label on top describing the action
-3. Optional: an icon in the middle of the arrow
-
-| From | To | Arrow Label | Icon |
-|---|---|---|---|
-| Box 1 → Box 2 | "python cdc_extract.py" | Python (🐍) |
-| Box 2 → Box 3 | "PUT file to stage" | Upload (↑) |
-| Box 3 → Box 4 | "ALTER PIPE REFRESH" | Play (▶) |
-| Box 4 → Box 5 | "Stream captures delta" | Delta (Δ) |
-| Box 5 → Box 6 | "dbt snapshot + run" | dbt logo |
-| Box 6 → Box 7 | "FastAPI queries" | Database (🗄) |
-
----
-
-## Color Palette
-
-| Element | Hex | Usage |
-|---|---|---|
-| Background | #0a0e27 | Main dark background |
-| Grid lines | #1a1f3a | Subtle grid |
-| Box 1 (SQLite) | #1565c0 | Dark blue |
-| Box 2 (CDC) | #00897b | Teal |
-| Box 3 (Stage) | #0277bd | Medium blue |
-| Box 4 (Snowpipe) | #0288d1 | Light blue |
-| Box 5 (Stream+Task) | #6a1b9a | Purple |
-| Box 6 (dbt) | #ef6c00 | Orange |
-| Box 7 (Dashboard) | #2e7d32 | Green |
-| Arrows | #00d4ff | Glowing cyan |
-| Highlight | #ffb300 | Amber/gold |
-| Error/DIFFERENT | #ff1744 | Red |
-| Success/SAME | #00e676 | Green |
-| Text primary | #ffffff | White |
-| Text secondary | #b0bec5 | Light gray |
-
----
-
-## Styling Notes
-- Each box: rounded corners (8px), semi-transparent background, subtle border glow matching its color
-- Arrow lines: 2px thick, #00d4ff with 1px glow
-- Font: monospace for code/table names, sans-serif for labels (Inter or SF Pro)
-- Icons: outline style, matching the box color
-- No cartoon/flat icons — use geometric outlined icon style
-- Keep 30% empty space — don't overcrowd
-- The SCD2 snapshot in Box 6 should have a special Amber glow (#ffb300) — this is the most important part of the whole pipeline
-- The DIFFERENT/SAME badges in Box 7 should also draw attention — this is the visible proof that the pipeline works
-- Final touch at very bottom right corner: small text "Built for learning. Designed for production."
-
----
-
-## Output
-Generate this as a clean exportable poster in PNG 1920×1080 (or SVG). Ready to share on LinkedIn, Twitter, or print as an A3 reference sheet.
+```
+/imagine prompt: Enterprise architecture poster "SubsTrack CDC SCD2 SaaS Pipeline" in 4 horizontal medallion layers, full width, dark navy background #0a0e27, 4K quality. Layer 1 blue: SQLite database with 7 tables labeled with row counts (1000 customers, 2000 purchases, etc), CDC Python engine with watermark.json, CSV upload to Snowflake stage @RAW_STAGE. Layer 2 purple: 7 Snowpipe icons, 7 stream delta icons, 7 task gear icons, yellow highlight "NO SCHEDULE manual only". Layer 3 orange LARGEST with AMBER GLOW center: dbt logo, 4 SCD2 snapshots showing Alice 2-row example (Basic→Premium with dbt_valid_from/to dates), temporal join SQL highlighted, DIFFERENT/SAME badges visible. Layer 4 green: FastAPI dashboard with 6 panels (Overview, Customers, Purchases, Subscriptions, Billing, Usage), metric cards showing ~16K total records. Left sidebar pipeline health, right sidebar tech stack badges. Bottom strip git history 8 commits. Glowing cyan arrows. Professional keynote quality, generous spacing, geometric icons, monospace code fonts --ar 16:9 --style raw --v 6
+```
