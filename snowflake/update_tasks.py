@@ -1,6 +1,30 @@
-CREATE TASK IF NOT EXISTS SUBSTRACK_DB.RAW.PROCESS_CUSTOMERS_TASK
+import snowflake.connector
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+conn = snowflake.connector.connect(
+    account=os.getenv("SNOWFLAKE_ACCOUNT"),
+    user=os.getenv("SNOWFLAKE_USER"),
+    password=os.getenv("SNOWFLAKE_PASSWORD"),
+    role=os.getenv("SNOWFLAKE_ROLE"),
+    login_timeout=10
+)
+cursor = conn.cursor()
+
+cursor.execute("ALTER TASK SUBSTRACK_DB.RAW.PROCESS_CUSTOMERS_TASK SUSPEND")
+cursor.execute("ALTER TASK SUBSTRACK_DB.RAW.PROCESS_PURCHASES_TASK SUSPEND")
+print("Old tasks suspended")
+
+cursor.execute("DROP TASK IF EXISTS SUBSTRACK_DB.RAW.PROCESS_CUSTOMERS_TASK")
+cursor.execute("DROP TASK IF EXISTS SUBSTRACK_DB.RAW.PROCESS_PURCHASES_TASK")
+print("Old tasks dropped")
+
+# Create customers task - no schedule, manual only
+cursor.execute("""
+CREATE TASK SUBSTRACK_DB.RAW.PROCESS_CUSTOMERS_TASK
   WAREHOUSE = SUBSTRACK_WH
-  COMMENT = 'Run manually after CDC upload. Merges stream changes into STAGING.CUSTOMERS'
+  COMMENT = 'Run manully after CDC upload to merge stream into staging'
   WHEN SYSTEM$STREAM_HAS_DATA('SUBSTRACK_DB.RAW.CUSTOMERS_STREAM')
 AS
 MERGE INTO SUBSTRACK_DB.STAGING.CUSTOMERS AS target
@@ -22,11 +46,14 @@ WHEN MATCHED AND source._change_type = 'UPSERT' THEN UPDATE SET
     target.email = source.email, target.full_name = source.full_name,
     target.plan = source.plan, target.plan_price = source.plan_price,
     target.status = source.status, target.updated_at = source.updated_at,
-    target._dw_updated_at = CURRENT_TIMESTAMP();
+    target._dw_updated_at = CURRENT_TIMESTAMP()
+""")
+print("Customers task created (no schedule)")
 
-CREATE TASK IF NOT EXISTS SUBSTRACK_DB.RAW.PROCESS_PURCHASES_TASK
+cursor.execute("""
+CREATE TASK SUBSTRACK_DB.RAW.PROCESS_PURCHASES_TASK
   WAREHOUSE = SUBSTRACK_WH
-  COMMENT = 'Run manually after CDC upload. Merges stream changes into STAGING.PURCHASES'
+  COMMENT = 'Run manually after CDC upload to merge stream into staging'
   WHEN SYSTEM$STREAM_HAS_DATA('SUBSTRACK_DB.RAW.PURCHASES_STREAM')
 AS
 MERGE INTO SUBSTRACK_DB.STAGING.PURCHASES AS target
@@ -38,4 +65,10 @@ USING (
 ) AS source
 ON target.purchase_id = source.purchase_id
 WHEN NOT MATCHED THEN INSERT (purchase_id, customer_id, product_name, amount, purchase_date, created_at, _dw_updated_at)
-VALUES (source.purchase_id, source.customer_id, source.product_name, source.amount, source.purchase_date, source.created_at, CURRENT_TIMESTAMP());
+VALUES (source.purchase_id, source.customer_id, source.product_name, source.amount, source.purchase_date, source.created_at, CURRENT_TIMESTAMP())
+""")
+print("Purchases task created (no schedule)")
+
+cursor.close()
+conn.close()
+print("Done — tasks are manual only, zero polling")

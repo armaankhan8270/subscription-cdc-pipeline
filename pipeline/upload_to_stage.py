@@ -1,5 +1,6 @@
 import snowflake.connector
 import os
+import time
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -43,6 +44,14 @@ def trigger_snowpipe(pipe_name):
     cursor.close()
     conn.close()
 
+def execute_task(task_name):
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    cursor.execute(f"EXECUTE TASK {task_name}")
+    print(f"Task {task_name} executed")
+    cursor.close()
+    conn.close()
+
 def run_pipeline(customers_file, purchases_file):
     if customers_file:
         upload_file_to_stage(
@@ -57,6 +66,14 @@ def run_pipeline(customers_file, purchases_file):
             "@SUBSTRACK_DB.RAW.RAW_STAGE/purchases/"
         )
         trigger_snowpipe("SUBSTRACK_DB.RAW.PURCHASES_PIPE")
+
+    print("Waiting 5 seconds for Snowpipe to load data into RAW tables...")
+    time.sleep(5)
+
+    if customers_file:
+        execute_task("SUBSTRACK_DB.RAW.PROCESS_CUSTOMERS_TASK")
+    if purchases_file:
+        execute_task("SUBSTRACK_DB.RAW.PROCESS_PURCHASES_TASK")
 
 if __name__ == "__main__":
     from cdc_extract import run_extraction
