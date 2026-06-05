@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: "Customer dimension with full SCD Type 2 history"
+    columns:
+      - name: customer_sk
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+      - name: plan
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['free', 'basic', 'premium', 'enterprise']
+
+  - name: fct_purchases
+    description: "Purchase facts with historically accurate customer context"
+    columns:
+      - name: purchase_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_sk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customer')
+              field: customer_sk

@@ -1,0 +1,5 @@
+$env:SNOWFLAKE_ACCOUNT="RUCXXRL-YT07763"
+$env:SNOWFLAKE_USER="armaankhan8270"
+$env:SNOWFLAKE_PASSWORD="ArmaanKhan@242"
+
+dbt $args

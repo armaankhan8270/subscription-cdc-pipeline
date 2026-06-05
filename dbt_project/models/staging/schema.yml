@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Cleaned current state of customers"
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+      - name: plan
+        tests:
+          - accepted_values:
+              values: ['free', 'basic', 'premium', 'enterprise']
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['active', 'cancelled', 'paused']
+
+  - name: stg_purchases
+    description: "Cleaned purchase records"
+    columns:
+      - name: purchase_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null

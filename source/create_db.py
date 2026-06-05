@@ -1,14 +1,16 @@
 import sqlite3
 import os
 
-DB_PATH = "source/substrack.db"
+DB_PATH = os.path.join(os.path.dirname(__file__), "substrack.db")
 
 def create_database():
+    if os.path.exists(DB_PATH):
+        os.remove(DB_PATH)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS customers (
+        CREATE TABLE customers (
             customer_id TEXT PRIMARY KEY,
             email TEXT NOT NULL,
             full_name TEXT NOT NULL,
@@ -21,7 +23,7 @@ def create_database():
     """)
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS purchases (
+        CREATE TABLE purchases (
             purchase_id TEXT PRIMARY KEY,
             customer_id TEXT NOT NULL,
             product_name TEXT NOT NULL,

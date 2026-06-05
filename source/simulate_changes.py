@@ -1,7 +1,8 @@
 import sqlite3
+import os
 from datetime import datetime
 
-DB_PATH = "source/substrack.db"
+DB_PATH = os.path.join(os.path.dirname(__file__), "substrack.db")
 
 def get_now():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")

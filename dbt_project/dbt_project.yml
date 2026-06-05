@@ -1,0 +1,21 @@
+name: 'substrack_dbt'
+version: '1.0.0'
+config-version: 2
+profile: 'substrack_dbt'
+model-paths: ["models"]
+snapshot-paths: ["snapshots"]
+test-paths: ["tests"]
+
+models:
+  substrack_dbt:
+    staging:
+      +materialized: view
+      +schema: STAGING
+    marts:
+      +materialized: table
+      +schema: MARTS
+
+snapshots:
+  substrack_dbt:
+    +target_schema: SNAPSHOTS
+    +target_database: SUBSTRACK_DB

@@ -4,7 +4,7 @@ import json
 import os
 from datetime import datetime
 
-DB_PATH = "source/substrack.db"
+DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "source", "substrack.db")
 WATERMARK_PATH = "pipeline/watermark.json"
 OUTPUT_PATH = "pipeline/output/"
 

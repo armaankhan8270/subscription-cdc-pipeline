@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: staging
+    database: SUBSTRACK_DB
+    schema: STAGING
+    tables:
+      - name: customers
+      - name: purchases
