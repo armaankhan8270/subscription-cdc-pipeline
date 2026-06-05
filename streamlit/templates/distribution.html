@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Plan Distribution{% endblock %}
+{% block content %}
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
+    <div class="chart">{{ pie|safe }}</div>
+    <div class="chart">{{ bar|safe }}</div>
+</div>
+
+<h2 style="margin-bottom:12px;font-size:16px;">SCD2 Versions Per Customer</h2>
+<table>
+    <tr><th>Customer</th><th>Name</th><th>Total Versions</th><th>First Seen</th><th>Last Changed</th></tr>
+    {% for v in versions %}
+    <tr>
+        <td>{{ v[0] }}</td>
+        <td>{{ v[1] }}</td>
+        <td>{{ v[2] }}</td>
+        <td>{{ v[3] }}</td>
+        <td>{{ v[4] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

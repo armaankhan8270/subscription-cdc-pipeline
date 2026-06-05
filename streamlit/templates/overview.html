@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Pipeline Overview{% endblock %}
+{% block content %}
+<div class="cards">
+    <div class="card"><h3>Raw Records</h3><div class="value">{{ counts.raw_customers }}</div></div>
+    <div class="card"><h3>Staging Customers</h3><div class="value">{{ counts.staging_customers }}</div></div>
+    <div class="card"><h3>SCD2 Versions</h3><div class="value">{{ counts.snapshot_versions }}</div></div>
+    <div class="card"><h3>Total Purchases</h3><div class="value">{{ counts.total_purchases }}</div></div>
+</div>
+
+<div class="chart">{{ chart|safe }}</div>
+
+<h2 style="margin-bottom:12px;font-size:16px;">Task History</h2>
+<table>
+    <tr><th>Task</th><th>State</th><th>Scheduled</th><th>Error</th></tr>
+    {% for t in tasks %}
+    <tr>
+        <td>{{ t[0] }}</td>
+        <td>{{ t[1] }}</td>
+        <td>{{ t[2] }}</td>
+        <td>{{ t[3] or '' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

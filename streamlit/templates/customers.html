@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Customer History{% endblock %}
+{% block content %}
+<h2 style="margin-bottom:16px;">SCD2 Customer Plan History</h2>
+<form method="get" style="margin-bottom:20px;">
+    <select name="customer_id" onchange="this.form.submit()" style="padding:8px 16px;border-radius:8px;border:1px solid #d1d5db;font-size:14px;">
+        <option value="">Select a customer...</option>
+        {% for c in customers %}
+        <option value="{{ c[0] }}" {{ 'selected' if c[0] == selected }}>{{ c[1] }}</option>
+        {% endfor %}
+    </select>
+</form>
+
+{% if timeline %}
+<div class="chart">{{ timeline|safe }}</div>
+{% endif %}
+
+{% if history %}
+<table>
+    <tr><th>Plan</th><th>Price</th><th>Status</th><th>Valid From</th><th>Valid To</th><th>Days</th></tr>
+    {% for h in history %}
+    <tr>
+        <td><span class="badge badge-{{ h[2] }}">{{ h[2] }}</span></td>
+        <td>${{ h[3] }}</td>
+        <td>{{ h[4] }}</td>
+        <td>{{ h[5] }}</td>
+        <td>{{ h[6] or 'Current' }}</td>
+        <td>{{ h[7] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+{% endblock %}
