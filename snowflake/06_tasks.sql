@@ -86,7 +86,7 @@ MERGE INTO SUBSTRACK_DB.STAGING.BILLING_INVOICES AS target
 USING (
     SELECT * FROM (
         SELECT
-            invoice_id, customer_id, subscription_id, amount,
+            invoice_id, customer_id, amount,
             currency, status, TRY_TO_DATE(due_date) AS due_date,
             TRY_TO_TIMESTAMP(paid_at) AS paid_at,
             TRY_TO_TIMESTAMP(created_at) AS created_at,
@@ -97,8 +97,8 @@ USING (
     ) WHERE rn = 1
 ) AS source
 ON target.invoice_id = source.invoice_id
-WHEN NOT MATCHED THEN INSERT (invoice_id, customer_id, subscription_id, amount, currency, status, due_date, paid_at, created_at, updated_at, _dw_updated_at)
-VALUES (source.invoice_id, source.customer_id, source.subscription_id, source.amount, source.currency, source.status, source.due_date, source.paid_at, source.created_at, source.updated_at, CURRENT_TIMESTAMP())
+WHEN NOT MATCHED THEN INSERT (invoice_id, customer_id, amount, currency, status, due_date, paid_at, created_at, updated_at, _dw_updated_at)
+VALUES (source.invoice_id, source.customer_id, source.amount, source.currency, source.status, source.due_date, source.paid_at, source.created_at, source.updated_at, CURRENT_TIMESTAMP())
 WHEN MATCHED AND source._change_type = 'UPSERT' THEN UPDATE SET
     target.status = source.status, target.paid_at = source.paid_at,
     target.amount = source.amount, target.updated_at = source.updated_at,

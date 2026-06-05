@@ -11,7 +11,6 @@ joined AS (
         i.invoice_id,
         i.customer_id,
         c.full_name AS customer_name,
-        i.subscription_id,
         i.amount,
         i.currency,
         i.status AS payment_status,

@@ -6,7 +6,6 @@ cleaned AS (
     SELECT
         invoice_id,
         customer_id,
-        subscription_id,
         amount,
         UPPER(TRIM(currency)) AS currency,
         LOWER(TRIM(status)) AS status,

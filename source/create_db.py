@@ -51,7 +51,6 @@ def create_database():
         CREATE TABLE billing_invoices (
             invoice_id TEXT PRIMARY KEY,
             customer_id TEXT NOT NULL,
-            subscription_id TEXT NOT NULL,
             amount REAL NOT NULL,
             currency TEXT NOT NULL DEFAULT 'USD',
             status TEXT NOT NULL DEFAULT 'pending',

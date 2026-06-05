@@ -29,7 +29,7 @@ TABLE_CONFIGS = {
     "billing_invoices": {
         "cursor_field": "updated_at",
         "change_type": "UPSERT",
-        "columns": "invoice_id, customer_id, subscription_id, amount, currency, status, due_date, paid_at, created_at, updated_at, 'UPSERT' as _change_type",
+        "columns": "invoice_id, customer_id, amount, currency, status, due_date, paid_at, created_at, updated_at, 'UPSERT' as _change_type",
         "order_by": "updated_at ASC",
     },
     "payment_methods": {

@@ -48,7 +48,7 @@ CREATE PIPE IF NOT EXISTS SUBSTRACK_DB.RAW.BILLING_INVOICES_PIPE
   COMMENT = 'Loads billing invoice CSV files from stage to raw table'
 AS
 COPY INTO SUBSTRACK_DB.RAW.BILLING_INVOICES (
-    invoice_id, customer_id, subscription_id, amount,
+    invoice_id, customer_id, amount,
     currency, status, due_date, paid_at, created_at, updated_at, _change_type
 )
 FROM @SUBSTRACK_DB.RAW.RAW_STAGE/billing_invoices/
